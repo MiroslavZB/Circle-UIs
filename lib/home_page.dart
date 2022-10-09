@@ -2,7 +2,7 @@
 
 import 'dart:math';
 
-import 'package:circleuis/wheel-models.dart';
+import 'package:circleuis/wheel_models.dart';
 import 'package:flutter/material.dart';
 
 // Lists with all states
@@ -64,26 +64,28 @@ class HomePageState extends State<HomePage> {
                   _buildAdditionalWheel(),
                 ],
                 const SizedBox(height: 50),
-                Container(  color: Colors.blue.withOpacity(0.6),
-                  padding: const EdgeInsets.all(20),
-                child: const Center(child: Text('Description', style: TextStyle(color: Colors.red, fontSize: 25)))),
+                Container(
+                    color: Colors.blue.withOpacity(0.6),
+                    padding: const EdgeInsets.all(20),
+                    child: const Center(
+                        child: Text('Description', style: TextStyle(color: Colors.red, fontSize: 25)))),
                 Container(
                   color: Colors.blue.withOpacity(0.6),
                   padding: const EdgeInsets.all(20),
-                  child: const Text("This is an example of two circle UIs I've built. Since this is taken out of"
+                  child: const Text(
+                      "This is an example of two circle UIs I've built. Since this is taken out of"
                       " a project and is made to be usable as a template, the colors aren't made to look nice. "
                       "Make sure you keep a look at the output of the program since some features have been"
                       " removed that would usually interrupt the flow of the program. \n\n All Required items "
                       "must be completed by clicking in the Center and then stopping first, before you can go to"
-                      " Additional. If you click away on the screen, the focus is lost. so thats why everything "
+                      " Additional. If you click away on the screen, the focus is lost. so that's why everything "
                       "disappears. The style is different on the two circle UIs. On the first one, you have a "
                       "fancier highlight but no immediate feedback on completion, so you have to click on another"
                       " item to see the change in completion state. \n\nOn the second UI, there are 3 sets, with"
                       " 3 different sets of items which each needs completion individually. The first Set has "
                       "two sets in addition to it. The Second and Third Set intentionally have only 2 items. ",
-                      textAlign: TextAlign
-                      .center, style:
-                  TextStyle(color: Colors.white)),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(height: 50),
               ],
@@ -151,10 +153,10 @@ class HomePageState extends State<HomePage> {
                         startDoing
                             ? null
                             : setState(() {
-                          lookingAtRequired = false;
-                          m = 7;
-                          _selectedModeIndex = 0;
-                        });
+                                lookingAtRequired = false;
+                                m = 7;
+                                _selectedModeIndex = 0;
+                              });
                       }
                     }
                   },

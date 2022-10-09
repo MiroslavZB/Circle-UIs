@@ -196,7 +196,6 @@ class EightWheelPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-
 const double fourWheelCenterRadius = 103;
 const double fourWheelPieceSize = 174;
 const double iconBoxSize = 60;
