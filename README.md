@@ -4,11 +4,11 @@ A new Flutter project.
 
 ## Showcase
 
-<image src = './assets/screenshot 1.png' width = "100px" alt = "Image 1"></image>
-<image src = './assets/screenshot 2.png' width = "100px" alt = "Image 2"></image>
-<image src = './assets/screenshot 3.png' width = "100px" alt = "Image 3"></image>
-<image src = './assets/screenshot 4.png' width = "100px" alt = "Image 4"></image>
-<image src = './assets/screenshot 5.png' width = "100px" alt = "Image 5"></image>
+<image src = './assets/screenshot 1.png' width = "200px" alt = "Image 1"></image>
+<image src = './assets/screenshot 2.png' width = "200px" alt = "Image 2"></image>
+<image src = './assets/screenshot 3.png' width = "200px" alt = "Image 3"></image>
+<image src = './assets/screenshot 4.png' width = "200px" alt = "Image 4"></image>
+<image src = './assets/screenshot 5.png' width = "200px" alt = "Image 5"></image>
 
 ## Introduction
 
