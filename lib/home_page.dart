@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, unused_local_variable, avoid_print
+// ignore_for_file: avoid_print
 
 import 'dart:math';
 
@@ -23,6 +23,8 @@ bool startDoing = false;
 int _selectedModeIndex = 0;
 
 class HomePageState extends State<HomePage> {
+  bool isDefaultFlow = true;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,7 @@ class HomePageState extends State<HomePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildRequiredOrAdditionalButtons(),
+                _buildDisableDefaultAppWorkflow(),
                 if (lookingAtRequired) ...[
                   _buildRequiredWheel(),
                 ] else ...[
@@ -147,7 +150,7 @@ class HomePageState extends State<HomePage> {
                 child: InkWell(
                   onTap: () {
                     {
-                      if (isRequiredReady.contains(false)) {
+                      if (isDefaultFlow && isRequiredReady.contains(false)) {
                         print('you must finish required first');
                       } else {
                         startDoing
@@ -191,6 +194,61 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildDisableDefaultAppWorkflow() {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.white,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: const Text(
+                  'Toggle Default App Workflow (will no longer check for completion status)',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                InkWell(
+                  borderRadius: BorderRadius.circular(25),
+                  onTap: () => setState(() => isDefaultFlow = !isDefaultFlow),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: isDefaultFlow ? Colors.grey : Colors.redAccent),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Expanded(
+                    child: Text(
+                      'Default: ${isDefaultFlow ? 'On' : 'Off'}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildRequiredWheel() {
     final w = MediaQuery.of(context).size.width;
     const h = fourWheelPieceSize * 2 + 20;
@@ -206,306 +264,22 @@ class HomePageState extends State<HomePage> {
               Positioned(
                 left: w / 2 + (fourWheelPieceSize * (sqrt(2) - 1)) / 2,
                 top: h / 2 - fourWheelPieceSize / 2,
-                child: Transform.rotate(
-                  angle: pi / 4,
-                  child: CustomPaint(
-                    painter:
-                        n == 3 ? const FourWheelPainter(isActive: true) : const FourWheelPainter(isActive: false),
-                    child: ClipPath(
-                      clipper: FourWheelPieceShape(),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => startDoing
-                            ? null
-                            : setState(() {
-                                n = 3;
-                              }),
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 22, bottom: 22),
-                          height: fourWheelPieceSize,
-                          width: fourWheelPieceSize,
-                          decoration: n == 3
-                              ? BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).cardColor.withOpacity(0.3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -5.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                    BoxShadow(
-                                      offset: const Offset(-15, 15),
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -20.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ],
-                                )
-                              : isRequiredReady[3 - 1]
-                                  ? BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: const Offset(-50, 50),
-                                          blurStyle: BlurStyle.inner,
-                                          blurRadius: 1000,
-                                          spreadRadius: 50,
-                                          color: Colors.lightGreenAccent.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    )
-                                  : null,
-                          alignment: Alignment.center,
-                          child: Transform.rotate(
-                            angle: -pi / 4,
-                            child: Container(
-                              height: iconBoxSize,
-                              width: iconBoxSize,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color.fromRGBO(22, 41, 128, 1),
-                              ),
-                              child: getRequiredIcon(3),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: pieceOfFourPieceWheel(thisN: 3, thisAngle: pi / 4),
               ),
               Positioned(
                 left: w / 2 - fourWheelPieceSize / 2,
                 top: h / 2 + (fourWheelPieceSize * (sqrt(2) - 1)) / 2,
-                child: Transform.rotate(
-                  angle: pi * 3 / 4,
-                  child: CustomPaint(
-                    painter:
-                        n == 2 ? const FourWheelPainter(isActive: true) : const FourWheelPainter(isActive: false),
-                    child: ClipPath(
-                      clipper: FourWheelPieceShape(),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => startDoing
-                            ? null
-                            : setState(() {
-                                n = 2;
-                              }),
-                        customBorder: FourWheelInkWellShape(),
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 22, bottom: 22),
-                          height: fourWheelPieceSize,
-                          width: fourWheelPieceSize,
-                          decoration: n == 2
-                              ? BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).cardColor.withOpacity(0.3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -5.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                    BoxShadow(
-                                      offset: const Offset(-15, 15),
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -20.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ],
-                                )
-                              : isRequiredReady[2 - 1]
-                                  ? BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: const Offset(-50, 50),
-                                          blurStyle: BlurStyle.inner,
-                                          blurRadius: 1000,
-                                          spreadRadius: 50,
-                                          color: Colors.lightGreenAccent.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    )
-                                  : null,
-                          alignment: Alignment.center,
-                          child: Transform.rotate(
-                            angle: -pi * 3 / 4,
-                            child: Container(
-                              height: iconBoxSize,
-                              width: iconBoxSize,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color.fromRGBO(22, 41, 128, 1),
-                              ),
-                              child: getRequiredIcon(2),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: pieceOfFourPieceWheel(thisN: 2, thisAngle: pi * 3 / 4),
               ),
               Positioned(
                 right: w / 2 + (fourWheelPieceSize * (sqrt(2) - 1)) / 2,
                 top: h / 2 - fourWheelPieceSize / 2,
-                child: Transform.rotate(
-                  angle: -pi * 3 / 4,
-                  child: CustomPaint(
-                    painter:
-                        n == 1 ? const FourWheelPainter(isActive: true) : const FourWheelPainter(isActive: false),
-                    child: ClipPath(
-                      clipper: FourWheelPieceShape(),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => startDoing
-                            ? null
-                            : setState(() {
-                                n = 1;
-                              }),
-                        customBorder: FourWheelInkWellShape(),
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 22, bottom: 22),
-                          height: fourWheelPieceSize,
-                          width: fourWheelPieceSize,
-                          decoration: n == 1
-                              ? BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).cardColor.withOpacity(0.3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -5.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                    BoxShadow(
-                                      offset: const Offset(-15, 15),
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -20.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ],
-                                )
-                              : isRequiredReady[1 - 1]
-                                  ? BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: const Offset(-50, 50),
-                                          blurStyle: BlurStyle.inner,
-                                          blurRadius: 1000,
-                                          spreadRadius: 50,
-                                          color: Colors.lightGreenAccent.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    )
-                                  : null,
-                          alignment: Alignment.center,
-                          child: Transform.rotate(
-                            angle: pi * 3 / 4,
-                            child: Container(
-                              height: iconBoxSize,
-                              width: iconBoxSize,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color.fromRGBO(22, 41, 128, 1),
-                              ),
-                              child: getRequiredIcon(1),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: pieceOfFourPieceWheel(thisN: 1, thisAngle: -pi * 3 / 4),
               ),
               Positioned(
                 left: w / 2 - fourWheelPieceSize / 2,
                 top: (h - fourWheelPieceSize * (sqrt(2) + 1)) / 2,
-                child: Transform.rotate(
-                  angle: -pi / 4,
-                  child: CustomPaint(
-                    painter:
-                        n == 4 ? const FourWheelPainter(isActive: true) : const FourWheelPainter(isActive: false),
-                    child: ClipPath(
-                      clipper: FourWheelPieceShape(),
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () => startDoing
-                            ? null
-                            : setState(() {
-                                n = 4;
-                              }),
-                        customBorder: FourWheelInkWellShape(),
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 22, bottom: 22),
-                          height: fourWheelPieceSize,
-                          width: fourWheelPieceSize,
-                          decoration: n == 4
-                              ? BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Theme.of(context).cardColor.withOpacity(0.3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -5.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                    BoxShadow(
-                                      offset: const Offset(-15, 15),
-                                      blurStyle: BlurStyle.outer,
-                                      blurRadius: 40,
-                                      spreadRadius: -20.0,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ],
-                                )
-                              : isRequiredReady[4 - 1]
-                                  ? BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: const Offset(-50, 50),
-                                          blurStyle: BlurStyle.inner,
-                                          blurRadius: 1000,
-                                          spreadRadius: 50,
-                                          color: Colors.lightGreenAccent.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    )
-                                  : null,
-                          alignment: Alignment.center,
-                          child: Transform.rotate(
-                            angle: pi / 4,
-                            child: Container(
-                              height: iconBoxSize,
-                              width: iconBoxSize,
-                              alignment: Alignment.center,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color.fromRGBO(22, 41, 128, 1),
-                              ),
-                              child: getRequiredIcon(4),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: pieceOfFourPieceWheel(thisN: 4, thisAngle: -pi / 4),
               ),
               // the circular progress indicator
               if (startDoing)
@@ -528,7 +302,8 @@ class HomePageState extends State<HomePage> {
                 child: InkWell(
                   onTap: () async {
                     if (n < 5) {
-                      if (isRequiredReady.contains(false) &&
+                      if (isDefaultFlow &&
+                          isRequiredReady.contains(false) &&
                           isRequiredReady.lastIndexWhere((element) => element == false) > n - 1) {
                         print('error');
                       } else {
@@ -599,6 +374,80 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget pieceOfFourPieceWheel({required int thisN, required double thisAngle}) {
+    return Transform.rotate(
+      angle: thisAngle,
+      child: CustomPaint(
+        painter: n == thisN ? const FourWheelPainter(isActive: true) : const FourWheelPainter(isActive: false),
+        child: ClipPath(
+          clipper: FourWheelPieceShape(),
+          child: InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: () => startDoing
+                ? null
+                : setState(() {
+                    n = thisN;
+                  }),
+            customBorder: FourWheelInkWellShape(),
+            child: Container(
+              padding: const EdgeInsets.only(left: 22, bottom: 22),
+              height: fourWheelPieceSize,
+              width: fourWheelPieceSize,
+              decoration: n == thisN
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).cardColor.withOpacity(0.3),
+                      boxShadow: [
+                        BoxShadow(
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 40,
+                          spreadRadius: -5.0,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                        BoxShadow(
+                          offset: const Offset(-15, 15),
+                          blurStyle: BlurStyle.outer,
+                          blurRadius: 40,
+                          spreadRadius: -20.0,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ],
+                    )
+                  : isRequiredReady[thisN - 1]
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              offset: const Offset(-50, 50),
+                              blurStyle: BlurStyle.inner,
+                              blurRadius: 1000,
+                              spreadRadius: 50,
+                              color: Colors.lightGreenAccent.withOpacity(0.5),
+                            ),
+                          ],
+                        )
+                      : null,
+              alignment: Alignment.center,
+              child: Transform.rotate(
+                angle: -thisAngle,
+                child: Container(
+                  height: iconBoxSize,
+                  width: iconBoxSize,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color.fromRGBO(22, 41, 128, 1),
+                  ),
+                  child: getRequiredIcon(thisN),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget getRequiredIcon(int n) {
     return SizedBox(
       height: eightWheelCenterRadius * 2 - 150,
@@ -613,39 +462,6 @@ class HomePageState extends State<HomePage> {
         ],
       ),
     );
-
-    var path = '';
-    switch (n) {
-      case 1:
-        {
-          path = 'assets/img$n-$letter.svg';
-          break;
-        }
-      case 2:
-        {
-          path = 'assets/img$n-$letter.svg';
-          break;
-        }
-      case 3:
-        {
-          path = 'assets/img$n-$letter.svg';
-          break;
-        }
-      case 4:
-        {
-          path = 'assets/img$n-$letter.svg';
-          break;
-        }
-    }
-    // if (path != '') {
-    //   return SvgPicture.asset(
-    //     path,
-    //     width: fourWheelCenterRadius * 2 - 80,
-    //     height: fourWheelCenterRadius * 2 - 80,
-    //   );
-    // }
-
-    return Container();
   }
 
   Widget buildRequiredNames() {
@@ -853,6 +669,47 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget setNames({required bool newToggleVal, required bool toggleVal, required int setN}) {
+    return Expanded(
+      child: InkWell(
+        onTap: () => startDoing
+            ? null
+            : setState(() {
+                m = 7;
+                toggle = newToggleVal;
+              }),
+        child: Container(
+          height: 35,
+          width: 80,
+          padding: const EdgeInsets.only(
+            left: 15,
+            right: 15,
+            top: 5,
+            bottom: 5,
+          ),
+          decoration: toggleVal
+              ? BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  border: Border.all(
+                    color: Colors.white,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                )
+              : const BoxDecoration(),
+          child: Center(
+            child: Text(
+              'Set $setN',
+              style: const TextStyle(
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   String getAdditionalNames() {
     var name = '';
     switch (_selectedModeIndex) {
@@ -943,10 +800,11 @@ class HomePageState extends State<HomePage> {
     return name;
   }
 
+  final eightWheelPieceColor = const Color.fromRGBO(22, 41, 128, 1);
+
   Widget _buildAdditionalWheel() {
     final w = MediaQuery.of(context).size.width;
     const h = fourWheelPieceSize * 2 + 20 + 20;
-    const eightWheelPieceColor = Color.fromRGBO(22, 41, 128, 1);
     return SizedBox(
       height: fourWheelPieceSize * 2 + 20 + 20,
       child: Align(
@@ -969,492 +827,32 @@ class HomePageState extends State<HomePage> {
             Positioned(
               left: w / 2 + eightWheelCenterRadius / 2 - 11,
               top: h / 2 + (eightWheelPieceSize * (sqrt(2) - 1)) / 2 - eightWheelPieceSize / 2 * sqrt(2) - 6,
-              child: Transform.rotate(
-                angle: pi / 4,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing || _selectedModeIndex != 0
-                          ? null
-                          : setState(() {
-                              m = 1;
-                            });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 1 ? eightWheelPainter(true) : eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 1
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(1)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: -pi / 4,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(1),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 1, thisAngle: pi / 4),
             ),
             Positioned(
               left: w / 2,
               top: h / 2 + 2,
-              child: Transform.rotate(
-                angle: pi / 2,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing
-                          ? null
-                          : _selectedModeIndex != 0
-                              ? null
-                              : setState(() {
-                                  m = 2;
-                                });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 2 ? eightWheelPainter(true) :  eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 2
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(2)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: -pi / 2,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(2),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 2, thisAngle: pi / 2),
             ),
             Positioned(
               left: eightWheelPieceSize * (sqrt(2) - 1) / 2 + w / 2 - eightWheelPieceSize / sqrt(2) - 10,
               top: h / 2 + eightWheelPieceSize * (sqrt(2) - 1) / 2 + 5,
-              child: Transform.rotate(
-                angle: pi * 3 / 4,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing
-                          ? null
-                          : _selectedModeIndex != 0
-                              ? null
-                              : setState(() {
-                                  m = 3;
-                                });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 3 ? eightWheelPainter(true) :  eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 3
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(3)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: -pi * 3 / 4,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(3),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 3, thisAngle: pi * 3 / 4),
             ),
             Positioned(
               right: w / 2 + 2,
               top: h / 2,
-              child: Transform.rotate(
-                angle: pi,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing
-                          ? null
-                          : _selectedModeIndex != 0
-                              ? null
-                              : setState(() {
-                                  m = 4;
-                                });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 4 ? eightWheelPainter(true) :  eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 4
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(4)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: -pi,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(4),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 4, thisAngle: pi),
             ),
             Positioned(
               right: w / 2 + (eightWheelPieceSize * (sqrt(2) - 1)) / 2 + 4,
               top: h / 2 - eightWheelPieceSize / sqrt(2) + (eightWheelPieceSize * (sqrt(2) - 1)) / 2 - 9,
-              child: Transform.rotate(
-                angle: -pi * 3 / 4,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing
-                          ? null
-                          : _selectedModeIndex != 0
-                              ? null
-                              : setState(() {
-                                  m = 5;
-                                });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 5 ? eightWheelPainter(true) :  eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 5
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(5)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: pi * 3 / 4,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(5),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 5, thisAngle: -pi * 3 / 4),
             ),
             Positioned(
               left: w / 2 - eightWheelPieceSize - 16,
               bottom: h / 2 + 2,
-              child: Transform.rotate(
-                angle: -pi / 2,
-                child: ClipPath(
-                  clipper: EightWheelPieceShape(),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: eightWheelPieceColor,
-                      backgroundColor: eightWheelPieceColor,
-                    ),
-                    onPressed: () {
-                      startDoing
-                          ? null
-                          : _selectedModeIndex != 0
-                              ? null
-                              : setState(() {
-                                  m = 6;
-                                });
-                    },
-                    child: CustomPaint(
-                      //painter: m == 6 ? eightWheelPainter(true) :  eightWheelPainter(false),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          top: eightWheelPieceSize -
-                              (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) -
-                              60,
-                          left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
-                        ),
-                        height: eightWheelPieceSize,
-                        width: eightWheelPieceSize,
-                        decoration: m == 6
-                            ? BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurStyle: BlurStyle.outer,
-                                    offset: const Offset(30, 45),
-                                    blurRadius: 60,
-                                    spreadRadius: -40.0,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                ],
-                              )
-                            : _selectedModeIndex != 0
-                                ? null
-                                : isAdditionalReady[getAdditionalIndex(6)]
-                                    ? BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurStyle: BlurStyle.outer,
-                                            offset: const Offset(30, 45),
-                                            blurRadius: 60,
-                                            spreadRadius: -40.0,
-                                            color: Colors.lightGreenAccent.withOpacity(0.8),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                        alignment: Alignment.center,
-                        child: _selectedModeIndex != 0
-                            ? Container()
-                            : Transform.rotate(
-                                angle: pi / 2,
-                                child: Container(
-                                  height: iconBoxSize,
-                                  width: iconBoxSize,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black,
-                                  ),
-                                  child: getAdditionalIcon(6),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: pieceOfFirstSixOfEightPieceWheel(thisM: 6, thisAngle: -pi / 2),
             ),
             Positioned(
               left: w / 2 + (eightWheelPieceSize * (sqrt(2) - 1)) / 2 - eightWheelPieceSize * sqrt(2) / 2 - 6,
@@ -1691,112 +1089,172 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget pieceOfFirstSixOfEightPieceWheel({required int thisM, required double thisAngle}) {
+    return Transform.rotate(
+      angle: thisAngle,
+      child: ClipPath(
+        clipper: EightWheelPieceShape(),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: eightWheelPieceColor,
+            backgroundColor: eightWheelPieceColor,
+          ),
+          onPressed: () {
+            startDoing
+                ? null
+                : _selectedModeIndex != 0
+                    ? null
+                    : setState(() {
+                        m = thisM;
+                      });
+          },
+          child: CustomPaint(
+            //painter: m == thisM ? eightWheelPainter(true) :  eightWheelPainter(false),
+            child: Container(
+              padding: EdgeInsets.only(
+                top:
+                    eightWheelPieceSize - (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) - 60,
+                left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
+              ),
+              height: eightWheelPieceSize,
+              width: eightWheelPieceSize,
+              decoration: m == thisM
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          blurStyle: BlurStyle.outer,
+                          offset: const Offset(30, 45),
+                          blurRadius: 60,
+                          spreadRadius: -40.0,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ],
+                    )
+                  : _selectedModeIndex != 0
+                      ? null
+                      : isAdditionalReady[getAdditionalIndex(thisM)]
+                          ? BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  blurStyle: BlurStyle.outer,
+                                  offset: const Offset(30, 45),
+                                  blurRadius: 60,
+                                  spreadRadius: -40.0,
+                                  color: Colors.lightGreenAccent.withOpacity(0.8),
+                                ),
+                              ],
+                            )
+                          : null,
+              alignment: Alignment.center,
+              child: _selectedModeIndex != 0
+                  ? Container()
+                  : Transform.rotate(
+                      angle: -thisAngle,
+                      child: Container(
+                        height: iconBoxSize,
+                        width: iconBoxSize,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black,
+                        ),
+                        child: getAdditionalIcon(thisM),
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget pieceSeven() {
+    return Transform.rotate(
+      angle: -pi / 4,
+      child: ClipPath(
+        clipper: EightWheelPieceShape(),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: eightWheelPieceColor,
+            backgroundColor: eightWheelPieceColor,
+          ),
+          onPressed: () {
+            startDoing
+                ? null
+                : _selectedModeIndex > 2
+                    ? null
+                    : setState(() {
+                        m = 7;
+                      });
+          },
+          child: CustomPaint(
+            //painter: m == 7 ? eightWheelPainter(true) :  eightWheelPainter(false),
+            child: Container(
+              padding: EdgeInsets.only(
+                top:
+                    eightWheelPieceSize - (eightWheelCenterRadius + eightWheelCenterRadius) / 2 * sin(pi / 8) - 60,
+                left: (eightWheelPieceSize + eightWheelCenterRadius) / 2 * cos(pi / 8) - 40,
+              ),
+              height: eightWheelPieceSize,
+              width: eightWheelPieceSize,
+              decoration: m == 7
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          blurStyle: BlurStyle.outer,
+                          offset: const Offset(30, 45),
+                          blurRadius: 60,
+                          spreadRadius: -40.0,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ],
+                    )
+                  : isAdditionalReady[getAdditionalIndex(7)]
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              blurStyle: BlurStyle.outer,
+                              offset: const Offset(30, 45),
+                              blurRadius: 60,
+                              spreadRadius: -40.0,
+                              color: Colors.lightGreenAccent.withOpacity(0.8),
+                            ),
+                          ],
+                        )
+                      : null,
+              alignment: Alignment.center,
+              child: _selectedModeIndex > 2
+                  ? Container()
+                  : Transform.rotate(
+                      angle: pi / 4,
+                      child: Container(
+                        height: iconBoxSize,
+                        width: iconBoxSize,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black,
+                        ),
+                        child: getAdditionalIcon(7),
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget getAdditionalIcon(int m) {
     return const Icon(
       IconData(0xf3dc, fontFamily: 'MaterialIcons'),
       size: (fourWheelCenterRadius * 2 - 80) / 2,
     );
-    var path = '';
-    switch (_selectedModeIndex) {
-      case 0:
-        {
-          switch (toggle) {
-            case true:
-              {
-                switch (m) {
-                  case 1:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-
-                  case 2:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 3:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 4:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 5:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 6:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 7:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 8:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                }
-                break;
-              }
-            case false:
-              {
-                switch (m) {
-                  case 1:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 2:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 3:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 4:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 5:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 6:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                  case 7:
-                    path = 'assets/img$m-$letter.svg';
-                    break;
-                }
-                break;
-              }
-          }
-          break;
-        }
-      case 1:
-        switch (m) {
-          case 7:
-            path = 'assets/img$m-$letter.svg';
-            break;
-          case 8:
-            path = 'assets/img$m-$letter.svg';
-            break;
-        }
-        break;
-      case 2:
-        switch (m) {
-          case 7:
-            path = 'assets/img$m-$letter.svg';
-            break;
-          case 8:
-            path = 'assets/img$m-$letter.svg';
-            break;
-        }
-        break;
-    }
-
-    if (path != '') {
-      // return SvgPicture.asset(
-      //   path,
-      //   width: eightWheelCenterRadius * 2 - 60,
-      //   height: eightWheelCenterRadius * 2 - 60,
-      // );
-    }
-    return Container();
   }
 
   Widget _buildAdditionalModes() {
-    final kShortcutIconHeight = MediaQuery.of(context).size.width / 6.4655172414;
-
     return SizedBox(
       height: MediaQuery.of(context).size.width / 3,
       child: CustomScrollView(
@@ -1837,7 +1295,6 @@ class HomePageState extends State<HomePage> {
                                 Text(
                                   'Set $index',
                                   textAlign: TextAlign.center,
-                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],

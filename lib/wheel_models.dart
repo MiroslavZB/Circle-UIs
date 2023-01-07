@@ -12,11 +12,11 @@ class FourWheelPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var borderColor = Colors.white.withOpacity(0.7);
-    var borderWidth = 2.0;
+    Color borderColor = Colors.white.withOpacity(0.7);
+    double borderWidth = 4;
     if (isActive) {
       borderColor = Colors.white;
-      borderWidth = 10;
+      borderWidth = 5;
     } else {
       borderColor = Colors.white.withOpacity(0.7);
       borderWidth = 4;
