@@ -1,7 +1,5 @@
 # circleuis
 
-A new Flutter project.
-
 ## Showcase
 
 <image src = './assets/screenshot 1.png' width = "200px" alt = "Image 1"></image>
